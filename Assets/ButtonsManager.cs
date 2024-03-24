@@ -5,20 +5,33 @@ using UnityEngine;
 public class ButtonsManager : MonoBehaviour
 {
     public GameObject carElement;
-    private bool activated = true;
-    private float doorOpenAngle = -170f;
-    private float doorCloseAngle = -90f;
-    private float doorSpeed = 10f; 
-
+    public bool activated = true;
+    private float doorOpenedAngle = -0.99f;
+    private float doorClosedAngle = -0.707168f;
+    private float doorSpeed = 20f;
+    private Coroutine corOpen, corClose;
+    private Quaternion startRotation;
+    private void Start()
+    {
+        startRotation = carElement.transform.rotation;
+    }
     public void DoorHandle()
     {
-        if (!activated)
+        if (activated)
         {
-            StartCoroutine(OpenDoor());
+            if (corClose != null)
+            {
+                StopCoroutine(corClose);
+            }
+            corOpen = StartCoroutine(OpenDoor());
         }
         else
         {
-            StartCoroutine(CloseDoor());
+            if (corOpen != null)
+            {
+                StopCoroutine(corOpen);
+            }
+            corClose = StartCoroutine(CloseDoor());
         }
 
         activated = !activated;
@@ -26,18 +39,18 @@ public class ButtonsManager : MonoBehaviour
 
     IEnumerator OpenDoor()
     {
-        while (carElement.transform.eulerAngles.x < doorOpenAngle)
+        while (carElement.transform.rotation.x > doorOpenedAngle)
         {
-            carElement.transform.Rotate(Vector3.right, doorSpeed * Time.deltaTime);
+            carElement.transform.Rotate(Vector3.left, doorSpeed * Time.deltaTime);
             yield return null;
         }
     }
 
     IEnumerator CloseDoor()
     {
-        while (carElement.transform.eulerAngles.x > doorCloseAngle)
+        while (carElement.transform.rotation.x < doorClosedAngle)
         {
-            carElement.transform.Rotate(Vector3.right, -doorSpeed * Time.deltaTime);
+            carElement.transform.rotation = Quaternion.RotateTowards(carElement.transform.rotation, startRotation, doorSpeed * Time.deltaTime);
             yield return null;
         }
     }
