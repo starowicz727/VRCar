@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SetMaterial : MonoBehaviour
 {
@@ -24,6 +25,10 @@ public class SetMaterial : MonoBehaviour
         if (other.gameObject.tag == "Player")
         {
             audioCanvas.Play();
+            foreach (GameObject obj in carElements)
+            {
+                obj.GetComponent<MeshRenderer>().material = this.GetComponent<Image>().material;
+            }
         }
     }
 
